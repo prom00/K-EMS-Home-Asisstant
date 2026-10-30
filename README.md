@@ -1,8 +1,8 @@
 # K-EMS — Home Assistant integration
 
-Simple outbound telemetry for K-EMS. Version 0.2.0 (experimental).
+Simple outbound telemetry for K-EMS. Version 0.3.0 (experimental).
 
-Every 60 seconds, Home Assistant sends its version and selected entity states as JSON to a configurable HTTP(S) endpoint. It also sends once when the integration starts and exposes the manual action `k_ems.send_data`.
+By default, every 60 seconds, Home Assistant sends its version and selected entity states as JSON to a configurable HTTP(S) endpoint. It also sends once when the integration starts and exposes the manual action `k_ems.send_data`.
 
 ## Install with HACS (custom repository)
 
@@ -52,9 +52,13 @@ Open **Developer tools > Actions**, choose `k_ems.send_data` and execute it. Che
 
 ## Notes / limitations
 
-- Configured values cannot yet be changed from the integration's options page; remove and re-add the integration to change them.
+- To change API URL, token, entity IDs, or send interval, open **Settings > Devices & services > K-EMS > Configure**. Saving automatically reloads the connection. The site ID is fixed. The interval is between 10 and 86400 seconds.
 - Currently supports one configuration entry per Home Assistant installation.
 - No remote control or remote upgrade features.
 - This prototype does **not** retry failed sends or queue data offline.
 - Use HTTPS and distinct per-site tokens for real deployments. Treat the receiving API as untrusted and restrict access and token privileges.
 - The integration has not been runtime-tested against every Home Assistant version. Check logs after installation.
+
+## Upgrade from v0.2.0
+
+Update the files from GitHub/HACS and restart Home Assistant. Your existing K-EMS configuration is retained. Open **Settings > Devices & services > K-EMS > Configure** to edit your settings. No need to remove/re-add the integration.

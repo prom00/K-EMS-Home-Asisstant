@@ -33,7 +33,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
     """Start telemetry for a configured site."""
-    settings = entry.data
+    settings = {**entry.data, **entry.options}
 
     async def send_data() -> None:
         """POST current entity states to the central K-EMS endpoint."""
@@ -72,7 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
         )
 
     unsubscribe = async_track_time_interval(
-        hass, schedule_send_data, timedelta(seconds=SEND_INTERVAL_SECONDS)
+        hass, schedule_send_data, timedelta(seconds=settings.get("send_interval", SEND_INTERVAL_SECONDS))
     )
     entry.async_on_unload(unsubscribe)
     entry.async_create_background_task(hass, send_data(), "k_ems_initial_telemetry")

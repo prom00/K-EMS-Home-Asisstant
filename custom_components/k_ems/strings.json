@@ -20,5 +20,23 @@
       "already_configured": "This site is already configured.",
       "single_instance_allowed": "K-EMS is already configured."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure K-EMS",
+        "description": "Update the telemetry endpoint and delivery settings. The site ID stays unchanged.",
+        "data": {
+          "url": "API URL",
+          "token": "API token",
+          "entities": "Entity IDs (comma-separated)",
+          "send_interval": "Send interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter a valid HTTP or HTTPS URL without embedded credentials.",
+      "invalid_input": "API token is required."
+    }
   }
 }
