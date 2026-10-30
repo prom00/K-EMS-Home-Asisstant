@@ -9,6 +9,7 @@ from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.loader import async_get_integration
 
 from .const import DOMAIN, SEND_INTERVAL_SECONDS
 
@@ -34,6 +35,8 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
     """Start telemetry for a configured site."""
     settings = {**entry.data, **entry.options}
+    integration = await async_get_integration(hass, DOMAIN)
+    k_ems_version = integration.version
 
     async def send_data() -> None:
         """POST current entity states to the central K-EMS endpoint."""
@@ -45,9 +48,10 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
         payload = {
             "site_id": settings["site_id"],
             "ha_version": HA_VERSION,
+            "k_ems_version": k_ems_version,
             "entities": states,
         }
-        
+
         _LOGGER.warning("K-EMS outgoing payload: %s", payload)
 
         try:
@@ -62,7 +66,9 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
 
             _LOGGER.info("K-EMS telemetry sent for %s", settings["site_id"])
         except Exception:
-            _LOGGER.exception("Failed to send K-EMS telemetry for %s", settings["site_id"])
+            _LOGGER.exception(
+                "Failed to send K-EMS telemetry for %s", settings["site_id"]
+            )
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = send_data
 
@@ -74,7 +80,9 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
         )
 
     unsubscribe = async_track_time_interval(
-        hass, schedule_send_data, timedelta(seconds=settings.get("send_interval", SEND_INTERVAL_SECONDS))
+        hass,
+        schedule_send_data,
+        timedelta(seconds=settings.get("send_interval", SEND_INTERVAL_SECONDS)),
     )
     entry.async_on_unload(unsubscribe)
     entry.async_create_background_task(hass, send_data(), "k_ems_initial_telemetry")
