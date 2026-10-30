@@ -1,6 +1,6 @@
 # K-EMS — Home Assistant integration
 
-Simple outbound telemetry for K-EMS. Version 0.3.0 (experimental).
+Simple outbound telemetry for K-EMS. Version 0.3.1 (experimental).
 
 By default, every 60 seconds, Home Assistant sends its version and selected entity states as JSON to a configurable HTTP(S) endpoint. It also sends once when the integration starts and exposes the manual action `k_ems.send_data`.
 
@@ -62,3 +62,37 @@ Open **Developer tools > Actions**, choose `k_ems.send_data` and execute it. Che
 ## Upgrade from v0.2.0
 
 Update the files from GitHub/HACS and restart Home Assistant. Your existing K-EMS configuration is retained. Open **Settings > Devices & services > K-EMS > Configure** to edit your settings. No need to remove/re-add the integration.
+
+
+## Entity selection (v0.3.1)
+
+When adding the integration or choosing **Configure**, choose one or more entities
+using Home Assistant's searchable entity selector. Previously selected entities are
+preselected when editing settings. Telemetry JSON remains unchanged.
+
+## GitHub versioning and HACS updates
+
+Version numbers follow semantic versioning (`MAJOR.MINOR.PATCH`). The version
+in `custom_components/k_ems/manifest.json` must match the Git tag (with `v` prefix).
+The bundled GitHub Actions workflow validates this and publishes a GitHub Release
+whenever you push a matching version tag. **A tag alone is not a published release.**
+
+For this release, upload/commit the changed repository contents first, then run:
+
+```bash
+git add .
+git commit -m "Add entity selector and release automation v0.3.1"
+git push origin main
+git tag v0.3.1
+git push origin v0.3.1
+```
+
+If `v0.3.1` already exists, choose a higher version in `manifest.json`
+and use that version in your tag. Check **GitHub → Actions** and **Releases** after
+pushing the tag. GitHub Actions must be enabled for your repository.
+The workflow validates the manifest version and creates the GitHub Release. HACS
+can then detect the published release and make the integration update available.
+
+To prepare a later release, edit `manifest.json` to the next version, commit
+and push, then create and push the corresponding Git tag. Do not push a tag
+before the manifest is updated.

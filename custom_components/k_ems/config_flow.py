@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
+from homeassistant.helpers import selector
 
 from .const import DOMAIN, SEND_INTERVAL_SECONDS
 
@@ -20,11 +21,6 @@ def is_valid_url(url):
     )
 
 
-def parse_entities(value):
-    """Convert comma-separated entity IDs into a unique list."""
-    return list(dict.fromkeys(
-        item.strip() for item in value.split(",") if item.strip()
-    ))
 
 
 class KEMSConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -53,7 +49,7 @@ class KEMSConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "site_id": site_id,
                         "url": url,
                         "token": token,
-                        "entities": parse_entities(user_input.get("entities", "")),
+                        "entities": user_input.get("entities", []),
                     },
                 )
 
@@ -63,7 +59,9 @@ class KEMSConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required("site_id", default="klant0001"): str,
                 vol.Required("url", default="https://api.k-ems.eu/api/telemetry"): str,
                 vol.Required("token"): str,
-                vol.Optional("entities", default=""): str,
+                vol.Optional("entities", default=[]): selector.EntitySelector(
+                    selector.EntitySelectorConfig(multiple=True)
+                ),
             }),
             errors=errors,
         )
@@ -95,7 +93,7 @@ class KEMSOptionsFlow(config_entries.OptionsFlowWithReload):
                     data={
                         "url": url,
                         "token": token,
-                        "entities": parse_entities(user_input.get("entities", "")),
+                        "entities": user_input.get("entities", []),
                         "send_interval": user_input["send_interval"],
                     }
                 )
@@ -107,8 +105,10 @@ class KEMSOptionsFlow(config_entries.OptionsFlowWithReload):
                 vol.Required("token", default=settings["token"]): str,
                 vol.Optional(
                     "entities",
-                    default=",".join(settings.get("entities", [])),
-                ): str,
+                    default=settings.get("entities", []),
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(multiple=True)
+                ),
                 vol.Required(
                     "send_interval",
                     default=settings.get("send_interval", SEND_INTERVAL_SECONDS),

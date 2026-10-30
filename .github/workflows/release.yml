@@ -1,0 +1,42 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Validate tag, manifest and Python files
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PYCODE'
+          import json
+          import os
+          import pathlib
+          import py_compile
+          import sys
+
+          version = json.loads(pathlib.Path('custom_components/k_ems/manifest.json').read_text())['version']
+          expected_tag = f'v{version}'
+          actual_tag = os.environ['RELEASE_TAG']
+          if actual_tag != expected_tag:
+              sys.exit(f'Tag {actual_tag} does not match manifest version {version} (expected {expected_tag})')
+          for path in pathlib.Path('custom_components/k_ems').glob('*.py'):
+              py_compile.compile(str(path), doraise=True)
+          for path in pathlib.Path('custom_components/k_ems').rglob('*.json'):
+              json.loads(path.read_text())
+          print(f'Validated release {actual_tag}')
+          PYCODE
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" --title "K-EMS ${{ github.ref_name }}" --generate-notes --verify-tag

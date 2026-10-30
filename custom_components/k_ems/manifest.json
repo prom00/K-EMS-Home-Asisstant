@@ -1,11 +1,13 @@
 {
   "domain": "k_ems",
   "name": "K-EMS",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "integration_type": "service",
   "iot_class": "cloud_push",
   "config_flow": true,
   "single_config_entry": true,
   "requirements": [],
-  "codeowners": []
+  "codeowners": [],
+  "documentation": "https://github.com/prom00/K-EMS-Home-Asisstant",
+  "issue_tracker": "https://github.com/prom00/K-EMS-Home-Asisstant/issues"
 }
