@@ -1,0 +1,3 @@
+send_data:
+  name: Send telemetry
+  description: Immediately send the configured entity states to the K-EMS server.

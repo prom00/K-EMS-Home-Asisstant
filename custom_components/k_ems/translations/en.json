@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect K-EMS",
+        "description": "Configure the central telemetry destination. Use HTTPS outside your trusted local network.",
+        "data": {
+          "site_id": "Site ID",
+          "url": "API URL",
+          "token": "API token",
+          "entities": "Entity IDs (comma-separated)"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter a valid HTTP or HTTPS URL without embedded credentials.",
+      "invalid_input": "Site ID and API token are required."
+    },
+    "abort": {
+      "already_configured": "This site is already configured.",
+      "single_instance_allowed": "K-EMS is already configured."
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "domain": "k_ems",
+  "name": "K-EMS",
+  "version": "0.2.0",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "config_flow": true,
+  "single_config_entry": true,
+  "requirements": [],
+  "codeowners": []
+}
