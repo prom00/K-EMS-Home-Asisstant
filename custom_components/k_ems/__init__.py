@@ -47,6 +47,8 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
             "ha_version": HA_VERSION,
             "entities": states,
         }
+        
+        _LOGGER.warning("K-EMS outgoing payload: %s", payload)
 
         try:
             session = async_get_clientsession(hass)
@@ -79,8 +81,10 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry) -> bool:
-    """Stop periodic telemetry and remove the configured sender."""
-    entry.async_unload()
-    hass.data.get(DOMAIN, {}).pop(entry.entry_id, None)
+async def async_unload_entry(hass, entry):
+    """Unload a K-EMS configuration entry."""
+
+    entry.async_unload(hass)
+    hass.data[DOMAIN].pop(entry.entry_id, None)
+
     return True
